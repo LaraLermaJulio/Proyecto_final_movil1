@@ -48,8 +48,15 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.rememberTopAppBarState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
+import androidx.compose.foundation.layout.*
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,41 +76,66 @@ fun Scaffold() {
     var presses by remember { mutableIntStateOf(0) }
     var searchQuery by remember { mutableStateOf("") }
 
+    // Control de selección de pestañas
+    var selectedTabIndex by remember { mutableStateOf(0) }
+    val scope = rememberCoroutineScope()
+
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            CenterAlignedTopAppBar(
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.primary,
-                ),
-                title = {
-                    Text(
-                        "Mis Notas",
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+            Column {
+                CenterAlignedTopAppBar(
+                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        titleContentColor = MaterialTheme.colorScheme.primary,
+                    ),
+                    title = {
+                        Text(
+                            "Mis Notas",
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = { /* Acción de la hamburguesa */ }) {
+                            Icon(
+                                imageVector = Icons.Filled.Menu,
+                                contentDescription = "Menu"
+                            )
+                        }
+                    },
+                    actions = {
+                        IconButton(onClick = { /* Acciones de búsqueda */ }) {
+                            Icon(
+                                imageVector = Icons.Filled.Search,
+                                contentDescription = "Buscar"
+                            )
+                        }
+                    },
+                    scrollBehavior = scrollBehavior,
+                )
+                // Pestañas para cambiar entre Tareas y Notas
+                TabRow(
+                    selectedTabIndex = selectedTabIndex
+                ) {
+                    Tab(
+                        selected = selectedTabIndex == 0,
+                        onClick = {
+                            selectedTabIndex = 0
+                        },
+                        text = { Text("Tareas") }
                     )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { /* Acción de la hamburguesa */ }) {
-                        Icon(
-                            imageVector = Icons.Filled.Menu,
-                            contentDescription = "Menu"
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { /* Acciones de búsqueda */ }) {
-                        Icon(
-                            imageVector = Icons.Filled.Search,
-                            contentDescription = "Buscar"
-                        )
-                    }
-                },
-                scrollBehavior = scrollBehavior,
-            )
+                    Tab(
+                        selected = selectedTabIndex == 1,
+                        onClick = {
+                            selectedTabIndex = 1
+                        },
+                        text = { Text("Notas") }
+                    )
+                }
+            }
         },
         bottomBar = {
             BottomAppBar {
@@ -179,7 +211,16 @@ fun Scaffold() {
             modifier = Modifier.padding(innerPadding),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            Text("")
+            when (selectedTabIndex) {
+                0 -> {
+                    // Contenido para la sección "Tareas"
+                    Text("")
+                }
+                1 -> {
+                    // Contenido para la sección "Notas"
+                    Text("")
+                }
+            }
         }
     }
 }
